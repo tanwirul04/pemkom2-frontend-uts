@@ -1,73 +1,18 @@
-# React + TypeScript + Vite
+# Form Registrasi Event
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Hasil Akhir
+![Form Hasil](./screenshot/form_hasil.png)
+Form Registrasi Event berisi:
+* Nama Lengkap (Text).
+* Email (Email validation).
+* Password (Min. 8 karakter).
+* Pilihan Kategori Event (Select).
+* Bio Singkat (Textarea).
 
-Currently, two official plugins are available:
+## Tampilan Saat Validasi Error
+![Form Error](./screenshot/form_error.png)
+Form registrasi ini dilengkapi dengan validasi input menggunakan Zod. Form akan menampilkan pesan error jika input yang dimasukkan tidak sesuai dengan aturan. Saat tombol **Daftar** diklik tanpa mengisi data atau dengan data yang tidak valid, sistem akan menampilkan pesan error pada setiap field yang belum memenuhi ketentuan.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Tampilan Saat Input Benar dan Berhasil
+![Form Berhasil](./screenshot/form_berhasil.png)
+Tampilan ini menunjukkan kondisi form ketika semua input valid, sehingga tidak ada pesan error yang muncul. Saat tombol **Daftar** diklik, akan muncul teks **Loading...** sebagai tanda proses berlangsung, lalu setelah beberapa saat akan kembali menjadi **Daftar**. Selain itu, jika diperiksa melalui console pada browser, data yang diinput akan tampil, yang menandakan form telah berjalan dengan baik.

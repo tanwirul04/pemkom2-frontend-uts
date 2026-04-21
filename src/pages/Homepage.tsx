@@ -1,9 +1,9 @@
 import "./App.css";
-import Header from "./component/Header"; 
-import Button from "./component/Button";
-import CardPembicara from "./component/CardPembicara";
-import { Collapse } from "./component/Collapse";
-import { CardInformasi } from "../component/CardInformasi";
+import Header from "../component/Header";
+import Button from "../component/ui/Button";
+import CardInformasi from "../component/CardInformasi";
+import CardPembicara from "../component/CardPembicara";
+import { Collapse } from "../component/Collapse";
 import { SectionTentang } from "../component/SectionTentang";
 import { CardKegiatan } from "../component/CardKegiatan";
 
