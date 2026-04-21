@@ -1,7 +1,7 @@
 import "./App.css";
 import Header from "../component/Header";
 import Button from "../component/ui/Button";
-import CardInformasi from "../component/CardInformasi";
+import { CardInformasi } from "../component/CradInformasi";
 import CardPembicara from "../component/CardPembicara";
 import { Collapse } from "../component/Collapse";
 import { SectionTentang } from "../component/SectionTentang";
@@ -11,7 +11,7 @@ function App() {
   return (
   <>
     <Header />
-
+  
     <CardInformasi
       icon="https://www.invofest-harkatnegeri.com/assets/text-image.png"
       desc="Invofest (Informatics Vocational Festival) adalah festival tahunan yang bertujuan untuk menginspirasi dan memberdayakan generasi muda Indonesia dalam menghadapi era digital. Dengan mengusung tema “Beyond Limits, Beyond Intelligence: Innovate for a Smarter Tomorrow ”."
