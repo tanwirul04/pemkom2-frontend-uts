@@ -8,6 +8,7 @@ import Button from "../component/ui/Button";
 import TextArea from "../component/ui/TextArea";
 import SelectInput from "../component/ui/SelectInput";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 type FormData = {
     nama: string;
@@ -41,10 +42,10 @@ export default function RegisterForm() {
 
     return (
         <div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                 <h1 className="text-2xl font-bold text-center">
+            <h1 className="text-2xl font-bold text-center">
                     Registrasi Event
-                </h1>
+            </h1>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 {/* Nama */}
                 <InputText 
                 label="Nama" 
@@ -94,6 +95,12 @@ export default function RegisterForm() {
                 variant="primary" 
                 type="submit"/>
             </form>
+
+            <p className="mt-4 text-sm">
+                Sudah punya akun?
+                <Link to="/login"> Login di sini</Link>
+            </p>
+
         </div>
     );
 }

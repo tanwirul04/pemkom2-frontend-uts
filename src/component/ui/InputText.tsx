@@ -7,7 +7,7 @@ interface InputTextProps {
 
 const InputText: React.FC<InputTextProps> = ({ label, nama, register, error }) => {
     return (
-        <div className="flex flex-col gap-1 mb-2">
+        <div className="flex flex-col gap-3 mb-3">
             <label htmlFor={label}>{label}</label>
             <input 
                 type="text"  
