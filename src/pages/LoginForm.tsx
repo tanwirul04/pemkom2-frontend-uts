@@ -10,12 +10,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 
 type FormData = {
-    email: string;
+    nim: string;
     password: string;
 };
 
 const schema = z.object({
-    email: z.string().min(1, "Email harus diisi"),
+    nim: z.string().min(1, "NIM harus diisi"),
     password: z.string().min(8, "Password minimal 8 karakter"),
 });
 
@@ -28,13 +28,13 @@ export default function LoginForm() {
     });
 
     const onSubmit = (data: FormData) => {
-        if (data.email === "tanwirul@gmail.com" && data.password === "password123") {
+        if (data.nim === "24090023" && data.password === "24090023") {
             alert("Login berhasil!");
-            login(data.email);
+            login(data.nim);
 
             navigate("/dashboard");
         } else {
-            alert("Email atau password salah!");
+            alert("NIM atau password salah!");
             return;
         }
     };
@@ -43,12 +43,12 @@ export default function LoginForm() {
         <div>
             <h2 className="text-3xl font-bold mb-4 text-center">Login</h2>
             <form onSubmit={handleSubmit(onSubmit)}>
-                {/* Email */}
+                {/* NIM */}
                 <InputText 
-                label="Email" 
-                nama="email" 
+                label="NIM" 
+                nama="nim" 
                 register={register} 
-                error={errors.email?.message} />
+                error={errors.nim?.message} />
 
                 {/* Password */}
                 <InputPassword 

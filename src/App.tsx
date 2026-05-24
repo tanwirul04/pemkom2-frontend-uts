@@ -14,9 +14,14 @@ import DashboardLayout from "./layout/DashboardLayout";
 import CategoryIndex from "./pages/dashboard/category/CategoryIndex";
 import EventIndex from "./pages/dashboard/event/EventIndex";
 import CategoryCreate from "./pages/dashboard/category/CategoryCreate";
+import CategoryEdit from "./pages/dashboard/category/CategoryEdit";
 import EventCreate from "./pages/dashboard/event/EventCreate";
 import SpeakerIndex from "./pages/dashboard/speaker/SpeakerIndex";
 import SpeakerCreate from "./pages/dashboard/speaker/SpeakerCreate";
+import SpeakerEdit from "./pages/dashboard/speaker/SpeakerEdit";
+import EventEdit from "./pages/dashboard/event/EventEdit";
+import BiodataIndex from "./pages/dashboard/biodata/BiodataIndex";
+
 
 function App() {
   return (
@@ -32,19 +37,23 @@ function App() {
         </Route>
         {/* auth */}
         <Route element={<AuthLayout/>}>
-          <Route path="/Login" element={<LoginForm />} />
+          <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
         </Route>
-
+          {/* dashboard */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardLayout/>}>
               <Route path="/dashboard" element={<DashboardIndex/>} />
               <Route path="/dashboard/category" element={<CategoryIndex/>} />
               <Route path="/dashboard/category/create" element={<CategoryCreate/>} />
+              <Route path="/dashboard/category/edit/:id" element={<CategoryEdit />} />
               <Route path="/dashboard/event" element={<EventIndex/>} />
               <Route path="/dashboard/event/create" element={<EventCreate/>} />
+              <Route path="/dashboard/event/edit/:id" element={<EventEdit />} />
+              <Route path="/dashboard/speaker/edit/:id" element={<SpeakerEdit />} />
               <Route path="/dashboard/speaker" element={<SpeakerIndex/>} />
               <Route path="/dashboard/speaker/create" element={<SpeakerCreate/>} />
+              <Route path="/dashboard/biodata" element={<BiodataIndex/>} />
             </Route>
           </Route>
 

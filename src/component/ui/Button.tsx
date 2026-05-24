@@ -19,7 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
    "px-7 py-2 rounded font-medium transition-all duration-200"; 
  const variantStyle = 
    variant === "primary" 
-     ? "bg-red-900 text-white hover:bg-red-600" 
+     ? "bg-blue-900 text-white hover:bg-slate-800" 
      : "border border-red-900 text-red-900 hover:bg-red-100"; 
  return ( 
    <button 

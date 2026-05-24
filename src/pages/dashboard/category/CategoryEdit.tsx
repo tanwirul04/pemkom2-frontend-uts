@@ -3,8 +3,8 @@ import InputText from "../../../component/ui/InputText";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Button from "../../../component/ui/Button";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom"; 
 
 type FormData = {
     category: string;
@@ -14,8 +14,9 @@ const schema = z.object({
     category: z.string().min(1, "Category Name wajib diisi"),
 });
 
-export default function CategoryCreate() {
+export default function CategoryEdit() {
     const navigate = useNavigate(); 
+    const { id } = useParams<{ id: string }>(); // Mengambil ID kategori dari URL
     const [loading, setLoading] = useState(false);
     
     // untuk notifikasi
@@ -25,31 +26,55 @@ export default function CategoryCreate() {
     const { 
         register, 
         handleSubmit, 
+        setValue, // Digunakan untuk mengisi data lama ke dalam form
         formState: { errors } 
     } = useForm<FormData>({
         resolver: zodResolver(schema),
     });
 
-    const handleCreateCategory = async (data: FormData) => {
+    // Logika untuk mengambil data kategori lama berdasarkan ID saat komponen dimuat
+    useEffect(() => {
+        const getDetailCategory = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/categories/${id}`);
+                if (!response.ok) throw new Error("Gagal mengambil data");
+                
+                const result = await response.json();
+                const categoryData = result.data || result; 
+                
+                if (categoryData && categoryData.name) {
+                    setValue("category", categoryData.name);
+                }
+            } catch (err: any) {
+                console.warn("Log Ambil Detail Gagal:", err);
+                setError("Gagal memuat data kategori dari server.");
+            }
+        };
+
+        if (id) getDetailCategory();
+    }, [id, setValue]);
+
+    // Logika PUT untuk mengirim data perubahan ke backend
+    const handleUpdateCategory = async (data: FormData) => {
         setLoading(true);
         setError(null); 
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/categories`, {
-                method: "POST",
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/categories/${id}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ name: data.category }),
+                body: JSON.stringify({ name: data.category }), 
             });
 
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.message || "Gagal menyimpan data.");
+                throw new Error(result.message || "Gagal memperbarui data.");
             }
 
-            setSuccess("Kategori baru berhasil ditambahkan!");
+            setSuccess("Kategori berhasil diperbarui!");
             
             // waktu 2 detik untuk redirect otomatis ke halaman tabel utama
             setTimeout(() => {
@@ -58,9 +83,8 @@ export default function CategoryCreate() {
             }, 2000);
 
         } catch (err: any) {
-            console.warn("Log Tambah Gagal:", err);
-            setError(err.message || "Terjadi kesalahan pada server.");
-            
+            console.warn("Log Update Gagal:", err);
+            setError(err.message || "Terjadi kesalahan pada server saat memperbarui data.");
             setTimeout(() => setError(null), 3000);
         } finally {
             setLoading(false);
@@ -69,7 +93,7 @@ export default function CategoryCreate() {
 
     return (
         <div className="w-full max-w-lg p-6">
-            {/* pesan berhasil dan pesan error */}
+            {/* pesan berhasil & error */}
             {success && (
                 <div className="fixed top-5 right-5 z-50 flex items-center gap-2 p-4 bg-green-600 text-white shadow-xl rounded-lg font-medium text-sm border border-green-700">
                     <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -89,10 +113,10 @@ export default function CategoryCreate() {
             )}
 
             <h1 className="text-2xl font-bold mb-4">
-                Add New Category
+                Edit Category
             </h1>
 
-            <form onSubmit={handleSubmit(handleCreateCategory)} className="space-y-4">
+            <form onSubmit={handleSubmit(handleUpdateCategory)} className="space-y-4">
                 <InputText 
                     label="Category Name"
                     nama="category"
@@ -100,11 +124,20 @@ export default function CategoryCreate() {
                     error={errors.category?.message}
                 />
 
-                <Button 
-                    tittle={loading ? "Menyimpan..." : "Simpan"}
-                    variant="primary"
-                    type="submit"
-                />
+                <div className="flex gap-2">
+                    <Button 
+                        tittle={loading ? "Memperbarui..." : "Simpan Perubahan"}
+                        variant="primary"
+                        type="submit"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => navigate("/dashboard/category")}
+                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded text-sm font-medium hover:bg-gray-50 transition"
+                    >
+                        Batal
+                    </button>
+                </div>
             </form>
         </div>
     );

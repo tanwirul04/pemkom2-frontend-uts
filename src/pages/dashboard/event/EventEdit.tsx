@@ -4,14 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Button from "../../../component/ui/Button";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type FormData = {
     nama: string;
-    location: string;      
-    category: string;      
-    pembicara: string;    
-    tanggal: string;     
+    location: string;
+    category: string;
+    pembicara: string;
+    tanggal: string;
     deskripsi: string;
 };
 
@@ -28,15 +28,16 @@ interface Speaker {
 
 const schema = z.object({
     nama: z.string().min(1, "Event Name wajib diisi"),
-    location: z.string().min(1, "Location wajib diisi"), 
+    location: z.string().min(1, "Location wajib diisi"),
     category: z.string().min(1, "Kategori wajib dipilih"),
-    pembicara: z.string().min(1, "Pembicara wajib dipilih"), 
-    tanggal: z.string().min(1, "Tanggal wajib diisi"), 
+    pembicara: z.string().min(1, "Pembicara wajib dipilih"),
+    tanggal: z.string().min(1, "Tanggal wajib diisi"),
     deskripsi: z.string().min(1, "Deskripsi wajib diisi"),
 });
 
-export default function EventCreate() {
+export default function EventEdit() {
     const navigate = useNavigate();
+    const { id } = useParams<{ id: string }>(); // Ambil ID Event dari URL rute
     const [loading, setLoading] = useState(false);
     
     // State untuk data dropdown
@@ -49,15 +50,17 @@ export default function EventCreate() {
     const { 
         register, 
         handleSubmit, 
+        setValue,
         formState: { errors } 
     } = useForm<FormData>({
         resolver: zodResolver(schema),
     });
 
-    // Mengambil data relasi kategori dan pembicara untuk dropdown
+    // Ambil data Kategori dan Pembicara terlebih dahulu, kemudian ambil detail Event
     useEffect(() => {
-        const fetchRelations = async () => {
+        const loadAllData = async () => {
             try {
+                // Fetch data untuk dropdown kategori dan pembicara
                 const [resCat, resSpeaker] = await Promise.all([
                     fetch(`${import.meta.env.VITE_API_URL}/categories`),
                     fetch(`${import.meta.env.VITE_API_URL}/speakers`)
@@ -65,31 +68,53 @@ export default function EventCreate() {
 
                 if (resCat.ok) setCategories(await resCat.json());
                 if (resSpeaker.ok) setSpeakers(await resSpeaker.json());
-            } catch (err) {
-                console.error("Gagal memuat data relasi:", err);
+
+                // Fetch data detail event yang mau diedit
+                const resEvent = await fetch(`${import.meta.env.VITE_API_URL}/events/${id}`);
+                if (!resEvent.ok) throw new Error("Gagal mengambil detail data event");
+                
+                const result = await resEvent.json();
+                const eventData = result.data || result;
+
+                if (eventData) {
+                    setValue("nama", eventData.name || "");
+                    setValue("location", eventData.location || "");
+                    setValue("category", String(eventData.categoryId));
+                    setValue("pembicara", String(eventData.pembicaraId));
+                    setValue("deskripsi", eventData.description || "");
+
+                    if (eventData.dateEvent) {
+                        const formattedDate = eventData.dateEvent.split("T")[0];
+                        setValue("tanggal", formattedDate);
+                    }
+                }
+            } catch (err: any) {
+                console.error("Gagal memuat data edit event:", err);
+                setError("Gagal memuat data dari server.");
             }
         };
-        fetchRelations();
-    }, []);
 
-    const handleCreateEvent = async (data: FormData) => {
+        if (id) loadAllData();
+    }, [id, setValue]);
+
+    // 2. Fungsi PUT untuk mengirim pembaruan data ke backend 
+    const handleUpdateEvent = async (data: FormData) => {
         setLoading(true);
         setError(null);
 
         try {
-            // Mengubah string "YYYY-MM-DD" menjadi format ISO Date
             const isoDate = new Date(data.tanggal).toISOString();
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/events`, {
-                method: "POST",
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/events/${id}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     name: data.nama,
                     location: data.location,
-                    categoryId: Number(data.category), 
-                    pembicaraId: Number(data.pembicara), 
+                    categoryId: Number(data.category),
+                    pembicaraId: Number(data.pembicara),
                     dateEvent: isoDate, 
                     description: data.deskripsi
                 }),
@@ -98,10 +123,10 @@ export default function EventCreate() {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.message || "Gagal menyimpan event baru.");
+                throw new Error(result.message || "Gagal memperbarui data event.");
             }
 
-            setSuccess("Event baru berhasil ditambahkan!");
+            setSuccess("Data event berhasil diperbarui!");
             
             setTimeout(() => {
                 setSuccess(null);
@@ -109,8 +134,8 @@ export default function EventCreate() {
             }, 2000);
 
         } catch (err: any) {
-            console.warn("Log Tambah Event Gagal:", err);
-            setError(err.message || "Terjadi kesalahan pada server.");
+            console.warn("Log Update Event Gagal:", err);
+            setError(err.message || "Terjadi kesalahan pada server saat memperbarui data.");
             setTimeout(() => setError(null), 3000);
         } finally {
             setLoading(false);
@@ -119,7 +144,7 @@ export default function EventCreate() {
 
     return (
         <div className="w-full max-w-lg p-6">
-            {/* pesan berhasil & error */}
+            {/* pesan berhasil dan error */}
             {success && (
                 <div className="fixed top-5 right-5 z-50 flex items-center gap-2 p-4 bg-green-600 text-white shadow-xl rounded-lg font-medium text-sm border border-green-700">
                     <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -139,10 +164,10 @@ export default function EventCreate() {
             )}
 
             <h1 className="text-2xl font-bold mb-4">
-                Add New Event
+                Edit Event
             </h1>
 
-            <form onSubmit={handleSubmit(handleCreateEvent)} className="space-y-4">
+            <form onSubmit={handleSubmit(handleUpdateEvent)} className="space-y-4">
                 {/* Nama Event */}
                 <InputText 
                     label="Event Name"
@@ -189,16 +214,17 @@ export default function EventCreate() {
                     {errors.pembicara && <p className="text-xs text-red-600 mt-1">{errors.pembicara.message}</p>}
                 </div>
 
-                {/* Tanggal Event  */}
+                {/* Tanggal Event */}
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm font-semibold text-gray-700" htmlFor="tanggal">Tanggal</label>
+                    <label className="text-sm font-semibold text-gray-700">Tanggal Event</label>
                     <input
-                        id="tanggal"
                         type="date"
                         {...register("tanggal")}
                         className="w-full p-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-red-900"
                     />
-                    {errors.tanggal && <p className="text-xs text-red-600 mt-1">{errors.tanggal.message}</p>}
+                    {errors.tanggal && (
+                        <p className="text-xs text-red-600 mt-1">{errors.tanggal.message}</p>
+                    )}
                 </div>
                 
                 {/* Deskripsi Event */}
@@ -209,11 +235,20 @@ export default function EventCreate() {
                     error={errors.deskripsi?.message}
                 />
 
-                <Button 
-                    tittle={loading ? "Menyimpan..." : "Simpan"}
-                    variant="primary"
-                    type="submit"
-                />
+                <div className="flex gap-2">
+                    <Button 
+                        tittle={loading ? "Memperbarui..." : "Simpan Perubahan"}
+                        variant="primary"
+                        type="submit"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => navigate("/dashboard/event")}
+                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded text-sm font-medium hover:bg-gray-50 transition"
+                    >
+                        Batal
+                    </button>
+                </div>
             </form>
         </div>
     );
