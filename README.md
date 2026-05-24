@@ -8,5 +8,6 @@
 * Password : 24090023
 
 # Link
-* Backend :
+* Repositori Backend :https://github.com/tanwirul04/be-uts.git
+* Deploy vercell : https://pemkom2-frontend-uts.vercel.app/
 * YouTube :
