@@ -10,4 +10,4 @@
 # Link
 * Repositori Backend :https://github.com/tanwirul04/be-uts.git
 * Deploy vercell : https://pemkom2-frontend-uts.vercel.app/
-* YouTube :
+* YouTube : https://youtu.be/qf4tIcSasmE
